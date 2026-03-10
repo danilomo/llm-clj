@@ -299,8 +299,3 @@ Copy this entire block for a working example:
   {})
 ```
 
-## Next Steps
-
-- [Streaming](03-streaming.md) - Get responses in real-time
-- [Tools](04-tools.md) - Let the LLM call your functions
-- [Vision](05-vision.md) - Work with images

@@ -671,8 +671,3 @@ You can transcribe audio from byte arrays (useful for streaming or in-memory aud
 - **TTS languages**: English primarily, limited multilingual support
 - **Real-time**: No streaming transcription (batch only)
 
-## Next Steps
-
-- [Token Counting](14-token-counting.md) - Manage context windows
-- [Error Handling](06-errors.md) - Handle audio API errors
-- [Batch Processing](12-batch-processing.md) - Process multiple files

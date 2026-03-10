@@ -537,8 +537,3 @@ Copy and paste this entire block:
 - **OpenAI file limits**: 100MB max file size, 50,000 requests per batch
 - **Anthropic limits**: 10,000 requests per batch
 
-## Next Steps
-
-- [Token Counting](13-token-counting.md) - Estimate costs before batching
-- [Error Handling](06-errors.md) - Handle batch errors gracefully
-- [Embeddings](10-embeddings.md) - Batch embedding generation

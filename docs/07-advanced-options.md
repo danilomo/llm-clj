@@ -440,18 +440,3 @@ Here's a complete reference of all unified options:
    Scientists warn that immediate action is needed to prevent catastrophic outcomes.")
 ```
 
-## Next Steps
-
-The remaining documentation chapters will cover the advanced specs in the `./specs/` folder:
-
-- Documents and PDFs
-- Server Tools (web search, code execution, computer use)
-- Embeddings
-- Images (DALL-E)
-- Audio (Whisper, TTS)
-- Batch Processing
-- Moderation
-- Token Counting
-- And more...
-
-Each chapter will follow when you're ready to expand the documentation.

@@ -529,8 +529,3 @@ The library provides a built-in cosine similarity function:
 ;;     :relevant-chunks [...]}
 ```
 
-## Next Steps
-
-- [Images](11-images.md) - DALL-E image generation
-- [Audio](12-audio.md) - Whisper transcription and TTS
-- [Error Handling](06-errors.md) - Handle embedding errors

@@ -460,8 +460,3 @@ The `execute-tool-call` function handles this automatically.
 ;; => "I found Alice (alice@example.com) and created order ORD-4521 for 3 widgets."
 ```
 
-## Next Steps
-
-- [Vision](05-vision.md) - Image understanding with tools
-- [Error Handling](06-errors.md) - Handle tool execution errors
-- [Advanced Options](07-advanced-options.md) - Strict mode and more

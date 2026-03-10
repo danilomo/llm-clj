@@ -588,8 +588,3 @@ The Moderation API is:
 
 Use moderation liberally to protect your application and users.
 
-## Next Steps
-
-- [Error Handling](06-errors.md) - Handle moderation errors
-- [Streaming](03-streaming.md) - Moderate streaming content
-- [Tools](04-tools.md) - Add moderation to tool pipelines

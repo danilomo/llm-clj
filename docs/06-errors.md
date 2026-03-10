@@ -431,6 +431,3 @@ Errors include provider-specific information:
     (println "Final failure:" (ex-message e))))
 ```
 
-## Next Steps
-
-- [Advanced Options](07-advanced-options.md) - Stop sequences, thinking, and more

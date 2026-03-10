@@ -140,11 +140,3 @@ Normalized response format:
         OpenAI API                   Anthropic API
 ```
 
-## What's Next?
-
-- [Basic Operations](02-basic-operations.md) - Detailed guide to chat completions
-- [Streaming](03-streaming.md) - Real-time streaming responses
-- [Tools](04-tools.md) - Function calling and tool use
-- [Vision](05-vision.md) - Image understanding
-- [Error Handling](06-errors.md) - Structured error handling
-- [Advanced Options](07-advanced-options.md) - Stop sequences, thinking, and more

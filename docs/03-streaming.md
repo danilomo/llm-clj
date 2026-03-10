@@ -342,8 +342,3 @@ The `llm-clj.streaming` namespace provides low-level utilities:
 ;; => {:channel #<chan> :buffer #<atom "">}
 ```
 
-## Next Steps
-
-- [Tools](04-tools.md) - Function calling with streaming support
-- [Vision](05-vision.md) - Image understanding
-- [Error Handling](06-errors.md) - Comprehensive error management

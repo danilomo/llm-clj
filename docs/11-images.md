@@ -470,8 +470,3 @@ Tips for managing costs:
 - **URL expiration**: Generated URLs expire after some time
 - **Content policy**: Some prompts may be rejected
 
-## Next Steps
-
-- [Audio](12-audio.md) - Whisper transcription and TTS
-- [Embeddings](10-embeddings.md) - Combine with image descriptions
-- [Error Handling](06-errors.md) - Handle image API errors

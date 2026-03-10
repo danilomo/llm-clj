@@ -504,8 +504,3 @@ The library automatically converts to Anthropic's API format:
 - **Token costs**: PDFs can consume significant tokens (~1500 per page)
 - **Page count heuristic**: The `pdf-page-count` function is approximate
 
-## Next Steps
-
-- [Server Tools](09-server-tools.md) - Web search, code execution, and more
-- [Error Handling](06-errors.md) - Handle document-related errors
-- [Advanced Options](07-advanced-options.md) - Beta features and caching

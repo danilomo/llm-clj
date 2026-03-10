@@ -351,7 +351,3 @@ You don't need to worry about these differences - just use the `vision` helpers 
 4. **Combine with tools**: Extract structured data using function calling
 5. **Handle errors**: Images may fail to load or be unreadable
 
-## Next Steps
-
-- [Error Handling](06-errors.md) - Handle vision-specific errors
-- [Advanced Options](07-advanced-options.md) - Temperature and other options for vision

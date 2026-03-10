@@ -616,8 +616,3 @@ For long conversations that exceed the context window:
 - **Image tokens** - Estimation doesn't account for image tokens
 - **Tool tokens** - Tool definitions add significant tokens
 
-## Next Steps
-
-- [Error Handling](06-errors.md) - Handle token counting errors
-- [Streaming](03-streaming.md) - Monitor tokens during streaming
-- [Batch Processing](12-batch-processing.md) - Estimate batch costs

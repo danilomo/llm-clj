@@ -683,8 +683,3 @@ The Responses API includes powerful built-in tools:
 - **Tool availability** - Some tools may have usage limits
 - **Response format** - Different from Chat Completions responses
 
-## Next Steps
-
-- [Streaming](03-streaming.md) - More streaming patterns
-- [Tools](04-tools.md) - Custom tool implementations
-- [Error Handling](06-errors.md) - Handle API errors

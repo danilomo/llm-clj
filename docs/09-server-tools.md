@@ -596,8 +596,3 @@ Automatically add required beta features to options:
 - **Network access**: Code execution sandbox may have limited network access
 - **Computer use**: Requires specific environment setup
 
-## Next Steps
-
-- [Documents](08-documents.md) - PDF support with server tools
-- [Error Handling](06-errors.md) - Handle server tool errors
-- [Advanced Options](07-advanced-options.md) - Beta features configuration
