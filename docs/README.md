@@ -13,6 +13,7 @@ A comprehensive guide to using llm-clj, a unified Clojure library for OpenAI and
 
 3. **[Streaming](03-streaming.md)** - Real-time streaming responses with core.async
 4. **[Tools](04-tools.md)** - Function calling and tool execution
+4a. **[Structured Outputs](04a-structured-outputs.md)** - Get validated Clojure data from LLM responses
 5. **[Vision](05-vision.md)** - Image understanding and analysis
 6. **[Error Handling](06-errors.md)** - Structured error handling and retries
 
@@ -85,6 +86,19 @@ A comprehensive guide to using llm-clj, a unified Clojure library for OpenAI and
 
 (llm/chat-completion provider messages
   {:tools [(tools/format-tool-openai my-tool)]})
+```
+
+### Structured Outputs
+
+```clojure
+(require '[llm-clj.schema :as schema])
+
+;; Define a Malli schema
+(def UserSchema [:map [:name :string] [:age :int]])
+
+;; Get validated Clojure data directly (works with any provider)
+(schema/chat-completion-structured provider messages UserSchema)
+;; => {:name "Alice" :age 28}
 ```
 
 ### Vision

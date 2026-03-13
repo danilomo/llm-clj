@@ -16,14 +16,27 @@
 ;; Sample tools
 ;; ---------------------------------------------------------------------------
 
+(defn- eval-infix
+  "Evaluates a simple infix math expression like '15 * 7' or '(* 15 7)'.
+   Handles basic operators: + - * /"
+  [expr]
+  (let [expr (str/trim expr)]
+    ;; Try infix pattern first: "num op num"
+    (if-let [[_ a op b] (re-matches #"(-?\d+(?:\.\d+)?)\s*([+\-*/])\s*(-?\d+(?:\.\d+)?)" expr)]
+      (let [a (Double/parseDouble a)
+            b (Double/parseDouble b)
+            op-fn (case op "+" + "-" - "*" * "/" /)]
+        (long (op-fn a b)))
+      ;; Fall back to Clojure prefix notation evaluation
+      (eval (read-string expr)))))
+
 (def calculator-tool
   (tools/define-tool
     "calculate"
     "Performs basic arithmetic. Returns the result of evaluating a mathematical expression."
     [:map [:expression :string]]
     (fn [{:keys [expression]}]
-      (let [result (eval (read-string expression))]
-        {:result result}))))
+      {:result (eval-infix expression)})))
 
 (def weather-tool
   (tools/define-tool
