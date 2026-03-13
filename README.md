@@ -27,7 +27,7 @@ Add to `project.clj`:
 ## Quick Start
 
 ```clojure
-(require '[llm-clj.core :as llm])
+(require '[llm-clj.api :as api])
 (require '[llm-clj.providers.openai :as openai])
 (require '[llm-clj.providers.anthropic :as anthropic])
 
@@ -36,12 +36,17 @@ Add to `project.clj`:
 ;; or
 (def provider (anthropic/create-provider {:api-key (System/getenv "ANTHROPIC_API_KEY")}))
 
-;; Chat completion
-(llm/chat-completion provider
-  [{:role :user :content "Hello!"}]
-  {:model "gpt-4o" :temperature 0.7})
+;; Simple chat
+(api/chat provider [{:role :user :content "Hello!"}])
 ;; => {:content "Hello! How can I help you today?" :role :assistant :usage {...}}
+
+;; With tools and structured output in one call
+(api/chat provider messages
+  {:tools [search-tool]
+   :response-schema SummarySchema})
 ```
+
+The `api/chat` function is the recommended entry point - it handles tools, structured outputs, and provider differences transparently.
 
 ## Streaming
 
@@ -71,11 +76,33 @@ Add to `project.clj`:
     (fn [{:keys [location unit]}]
       {:temperature 22 :unit (or unit "celsius") :location location})))
 
-;; Automatic tool execution loop
-(tools/chat-with-tools provider
+;; Via unified API (recommended)
+(api/chat provider
   [{:role :user :content "What's the weather in Tokyo?"}]
-  [weather-tool]
-  {:model "gpt-4o"})
+  {:tools [weather-tool] :model "gpt-4o"})
+```
+
+## Structured Outputs
+
+Get validated Clojure data directly from LLM responses using Malli schemas:
+
+```clojure
+(def PersonSchema
+  [:map
+   [:name :string]
+   [:age :int]
+   [:occupation :string]])
+
+;; Via unified API (recommended)
+(api/chat provider
+  [{:role :user :content "Dr. Sarah Chen is a 42-year-old neuroscientist."}]
+  {:response-schema PersonSchema :temperature 0})
+;; => {:name "Dr. Sarah Chen" :age 42 :occupation "neuroscientist"}
+
+;; Combine with tools seamlessly
+(api/chat provider messages
+  {:tools [search-tool lookup-tool]
+   :response-schema PersonSchema})
 ```
 
 ## Vision
