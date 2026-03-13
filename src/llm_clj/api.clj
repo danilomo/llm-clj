@@ -11,6 +11,8 @@
   (:require [llm-clj.core :as core]
             [llm-clj.tools :as tools]
             [llm-clj.schema :as schema]
+            [llm-clj.tracing.core :as tracing]
+            [llm-clj.tracing.span :as span]
             [cheshire.core :as json]))
 
 (defn- provider-type
@@ -172,36 +174,41 @@
   ([provider messages opts]
    (let [{:keys [tools response-schema schema-name schema-description validate?]
           :or {schema-name "Response" validate? true}} opts
-         has-tools? (seq tools)
+         has-tools? (boolean (seq tools))
          has-schema? (some? response-schema)
-         ptype (provider-type provider)
-         ;; Clean opts for pass-through
-         passthrough-opts (dissoc opts :tools :response-schema :schema-name
-                                  :schema-description :validate?)]
+         ptype (provider-type provider)]
+     (tracing/with-span [_ "llm.chat"
+                         {span/attr-llm-provider (name ptype)
+                          span/attr-llm-model (:model opts)
+                          span/attr-llm-has-tools has-tools?
+                          span/attr-llm-has-schema has-schema?
+                          span/attr-llm-message-count (count messages)}]
+       (let [;; Clean opts for pass-through
+             passthrough-opts (dissoc opts :tools :response-schema :schema-name
+                                      :schema-description :validate?)]
+         (cond
+           ;; Case 1: Neither tools nor schema - simple completion
+           (and (not has-tools?) (not has-schema?))
+           (core/chat-completion provider messages passthrough-opts)
 
-     (cond
-       ;; Case 1: Neither tools nor schema - simple completion
-       (and (not has-tools?) (not has-schema?))
-       (core/chat-completion provider messages passthrough-opts)
+           ;; Case 2: Schema only - use chat-completion-structured
+           (and (not has-tools?) has-schema?)
+           (schema/chat-completion-structured provider messages response-schema
+                                              (assoc passthrough-opts
+                                                     :name schema-name
+                                                     :description schema-description
+                                                     :validate? validate?))
 
-       ;; Case 2: Schema only - use chat-completion-structured
-       (and (not has-tools?) has-schema?)
-       (schema/chat-completion-structured provider messages response-schema
-                                          (assoc passthrough-opts
-                                                 :name schema-name
-                                                 :description schema-description
-                                                 :validate? validate?))
+           ;; Case 3: Tools only - use chat-with-tools
+           (and has-tools? (not has-schema?))
+           (tools/chat-with-tools provider messages tools opts)
 
-       ;; Case 3: Tools only - use chat-with-tools
-       (and has-tools? (not has-schema?))
-       (tools/chat-with-tools provider messages tools opts)
-
-       ;; Case 4: Both tools and schema - provider-specific handling
-       :else
-       (let [schema-opts {:response-schema response-schema
-                          :schema-name schema-name
-                          :schema-description schema-description
-                          :validate? validate?}]
-         (case ptype
-           :openai (chat-openai-tools-and-schema provider messages tools opts schema-opts)
-           :anthropic (chat-anthropic-tools-and-schema provider messages tools opts schema-opts)))))))
+           ;; Case 4: Both tools and schema - provider-specific handling
+           :else
+           (let [schema-opts {:response-schema response-schema
+                              :schema-name schema-name
+                              :schema-description schema-description
+                              :validate? validate?}]
+             (case ptype
+               :openai (chat-openai-tools-and-schema provider messages tools opts schema-opts)
+               :anthropic (chat-anthropic-tools-and-schema provider messages tools opts schema-opts)))))))))

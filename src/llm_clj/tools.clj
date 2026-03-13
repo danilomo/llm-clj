@@ -1,6 +1,9 @@
 (ns llm-clj.tools
   (:require [llm-clj.schema :as schema]
             [llm-clj.core :as core]
+            [llm-clj.tracing.core :as tracing]
+            [llm-clj.tracing.span :as span]
+            [llm-clj.tracing.config :as tracing-config]
             [clojure.walk :as walk]
             [cheshire.core :as json]))
 
@@ -62,17 +65,28 @@
   (let [tool-name (get-in tool-call [:function :name])
         args-json (get-in tool-call [:function :arguments])
         args (json/parse-string args-json true)
-        tool (first (filter #(= tool-name (:name %)) available-tools))]
-    (if tool
-      (let [result ((:f tool) args)]
-        {:role :tool
-         :tool-call-id (:id tool-call)
-         :name tool-name
-         :content (if (string? result) result (json/generate-string result))})
-      {:role :tool
-       :tool-call-id (:id tool-call)
-       :name tool-name
-       :content (str "Error: Tool " tool-name " not found.")})))
+        tool (first (filter #(= tool-name (:name %)) available-tools))
+        ;; Build attributes, optionally including args based on config
+        base-attrs {span/attr-tool-name tool-name}
+        attrs (if (tracing-config/capture-tool-args?)
+                (assoc base-attrs span/attr-tool-arguments args-json)
+                base-attrs)]
+    (tracing/with-span [_ "llm.tool" attrs]
+      (if tool
+        (let [result ((:f tool) args)
+              content (if (string? result) result (json/generate-string result))]
+          (tracing/add-attributes {span/attr-tool-success true
+                                   span/attr-tool-result-length (count content)})
+          {:role :tool
+           :tool-call-id (:id tool-call)
+           :name tool-name
+           :content content})
+        (do
+          (tracing/add-attributes {span/attr-tool-success false})
+          {:role :tool
+           :tool-call-id (:id tool-call)
+           :name tool-name
+           :content (str "Error: Tool " tool-name " not found.")})))))
 
 (defn- execute-tool-call-safe
   "Like execute-tool-call but catches exceptions and returns error messages
@@ -133,8 +147,20 @@
          (throw (ex-info "Max tool iterations exceeded"
                          {:max-iterations max-iterations
                           :iterations iter}))
-         (let [response (core/chat-completion provider msgs
-                                              (assoc chat-opts :tools formatted-tools))]
+         (let [response (tracing/with-span [_ "llm.completion"
+                                            {span/attr-iteration iter
+                                             span/attr-max-iterations max-iterations}]
+                          (let [resp (core/chat-completion provider msgs
+                                                           (assoc chat-opts :tools formatted-tools))]
+                            ;; Add usage info to span
+                            (when-let [usage (:usage resp)]
+                              (tracing/add-attributes
+                               {span/attr-usage-input-tokens (:input-tokens usage)
+                                span/attr-usage-output-tokens (:output-tokens usage)
+                                span/attr-usage-total-tokens (:total-tokens usage)}))
+                            (tracing/add-attribute span/attr-llm-finish-reason
+                                                   (name (or (:finish-reason resp) :unknown)))
+                            resp))]
            (if-not (seq (:tool-calls response))
              response
              (let [tool-results (mapv #(execute-tool-call-safe tools %) (:tool-calls response))

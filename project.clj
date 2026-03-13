@@ -17,4 +17,6 @@
   :aliases {"lint" ["do" ["cljfmt" "check"] ["kibit"]]
             "lint-fix" ["cljfmt" "fix"]
             "format" ["cljfmt" "fix"]}
+  :profiles {:otel {:dependencies [[io.opentelemetry/opentelemetry-api "1.40.0"]
+                                   [io.opentelemetry/opentelemetry-sdk "1.40.0"]]}}
   :repl-options {:init-ns llm-clj.core})
